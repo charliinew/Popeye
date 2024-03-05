@@ -44,7 +44,6 @@ services:
     depends_on:
       - db
       - redis
-      - poll
     restart: on-failure
 
   db:
@@ -75,7 +74,6 @@ services:
       - result-tier
     depends_on:
       - db
-      - redis
       - worker
     restart: on-failure
 
