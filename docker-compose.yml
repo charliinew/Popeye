@@ -7,15 +7,15 @@ services:
       - "5000:80"
     environment:
       - REDIS_HOST=redis
-      - POSTGRES_HOST=db
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - OPTION_A=Python
+      - OPTION_B=Node.js
+      - OPTION_C=Java
+      - OPTION_D=C++
     networks:
       - poll-tier
     depends_on:
       - redis
-    restart: always
+    restart: on-failure
 
   redis:
     image: redis:7
@@ -24,11 +24,15 @@ services:
     networks:
       - poll-tier
       - back-tier
-    restart: always
+    restart: on-failure
 
   worker:
     build: ./worker
     environment:
+      - OPTION_A=Python
+      - OPTION_B=Node.js
+      - OPTION_C=Java
+      - OPTION_D=C++
       - REDIS_HOST=redis
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
@@ -41,7 +45,7 @@ services:
       - db
       - redis
       - poll
-    restart: always
+    restart: on-failure
 
   db:
     image: postgres:16
@@ -50,13 +54,12 @@ services:
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=mypassword
     networks:
       - back-tier
       - result-tier
-    restart: always
+    restart: on-failure
 
   result:
     build: ./result
@@ -70,12 +73,11 @@ services:
       - POSTGRES_PASSWORD=mypassword
     networks:
       - result-tier
-      - back-tier
     depends_on:
       - db
       - redis
       - worker
-    restart: always
+    restart: on-failure
 
 networks:
   poll-tier:
